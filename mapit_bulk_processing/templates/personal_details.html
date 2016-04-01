@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}Where should we send the results?{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+        <h1>Where should we send the results?</h1>
+        <p>
+            We'll email this address when the work is done.
+        </p>
+        <p>
+            You can also add a short description to help you keep track of
+            things later if you're doing more than one.
+        </p>
+        <form action="" method="post" class="form">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+                <button type="submit" class="btn btn-primary">
+                    Finish {% bootstrap_icon "arrow-right" %}
+                </button>
+            {% endbuttons %}
+        </form>
+    </div>
+</div>
+{% endblock %}

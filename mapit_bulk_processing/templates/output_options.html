@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}What would you like from MapIt?{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+        <h1>What would you like from MapIt?</h1>
+        <p>
+            Your file has {{ bulk_lookup.num_rows }} rows we can add data to.
+            What would you like us to add to it from mapit?
+        </p>
+        <form action="" method="post" class="form">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+                <button type="submit" class="btn btn-primary">
+                    Next {% bootstrap_icon "arrow-right" %}
+                </button>
+            {% endbuttons %}
+        </form>
+    </div>
+</div>
+{% endblock %}

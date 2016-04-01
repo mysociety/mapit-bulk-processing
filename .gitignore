@@ -1,0 +1,5 @@
+conf/*.yml
+*.deployed
+.overcommit.yml
+.vagrant
+*.pyc

@@ -1,0 +1,4 @@
+python-virtualenv
+postgresql
+python-psycopg2
+python-yaml

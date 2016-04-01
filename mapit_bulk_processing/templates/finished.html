@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}Thanks!{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+        <h1>Thanks!</h1>
+        <p>
+            Your job is in the queue and will be processed as soon as our
+            robots can get to it.
+        </p>
+        <p>
+            You'll receive an email to {{ bulk_lookup.email }} as soon as it's
+            ready to download.
+        </p>
+    </div>
+</div>
+{% endblock %}

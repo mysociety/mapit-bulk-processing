@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}Time to pay up{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12">
+        <h1>Time to pay up</h1>
+        <p>
+            Your job contains {{ bulk_lookup.num_rows }} postcodes and will
+            cost you &pound;{{ bulk_lookup.price }}.
+        </p>
+          You can pay via credit or debit card.
+        </p>
+        {{ form.errors }}
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.bulk_lookup }}
+            {{ form.amount }}
+            <script
+              src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+              data-key="{{ settings.STRIPE_PUBLIC_KEY }}"
+              data-name="MapIt Bulk Lookups"
+              data-description="{{ bulk_lookup.description }}"
+              data-email="{{ bulk_lookup.email }}"
+              data-zip-code="true"
+              data-currency="gbp"
+              data-amount="{{ bulk_lookup.price_in_pence }}"
+              data-locale="auto">
+            </script>
+        </form>
+     </div>
+</div>
+{% endblock content %}
+
