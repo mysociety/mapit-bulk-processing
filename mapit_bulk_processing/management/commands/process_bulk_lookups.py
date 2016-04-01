@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 from django.core.files import File
+from django.core.mail import send_mail
 
 import requests
 
@@ -46,7 +47,7 @@ class Command(BaseCommand):
             postcode_field = bulk_lookup.postcode_field
             output_options = bulk_lookup.output_options.all()
             for row in bulk_lookup.original_file_reader():
-                row = self.lookup_row(row, postcode_field, output_options)
+                self.lookup_row(row, postcode_field, output_options)
                 writer.writerow(row)
             bulk_lookup.output_file.save(
                 bulk_lookup.output_filename(),
@@ -54,15 +55,13 @@ class Command(BaseCommand):
             )
 
     def lookup_row(self, row, postcode_field, output_options):
-        row = row.copy()
         postcode = row.get(postcode_field)
         if postcode:
             url = "http://mapit.mysociety.org/postcode/{0}".format(postcode)
             response = requests.get(url)
-            row = self.process_mapit_response(response, row, output_options)
-        return row
+            self.process_mapit_response(response, row, output_options)
 
-    def process_mapit_response(response, row, output_options):
+    def process_mapit_response(self, response, row, output_options):
         if response.status_code == 200:
             try:
                 json = response.json()
@@ -74,4 +73,12 @@ class Command(BaseCommand):
                 pass
 
     def send_success_email(self, bulk_lookup):
-        self.stdout.write(self.style.SUCCESS('sending success email'))
+        url = "http://localhost:8000{0}".format(bulk_lookup.output_file.url)
+        message = "You can download your new file from {0}".format(url)
+        send_mail(
+            'Your MapIt Lookup has finished!',
+            message,
+            'no-reply@mapit.mysociety.org',
+            ['to@example.com'],
+            fail_silently=False
+        )
