@@ -1,8 +1,13 @@
 import logging
+import tempfile
+import csv
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
+from django.core.files import File
+
+import requests
 
 from ...models import BulkLookup
 
@@ -35,7 +40,38 @@ class Command(BaseCommand):
             bulk_lookup.save()
 
     def do_lookup(self, bulk_lookup):
-        self.stdout.write(self.style.SUCCESS('doing lookup'))
+        with tempfile.TemporaryFile() as f:
+            writer = csv.DictWriter(f, bulk_lookup.output_field_names())
+            writer.writeheader()
+            postcode_field = bulk_lookup.postcode_field
+            output_options = bulk_lookup.output_options.all()
+            for row in bulk_lookup.original_file_reader():
+                row = self.lookup_row(row, postcode_field, output_options)
+                writer.writerow(row)
+            bulk_lookup.output_file.save(
+                bulk_lookup.output_filename(),
+                File(f)
+            )
+
+    def lookup_row(self, row, postcode_field, output_options):
+        row = row.copy()
+        postcode = row.get(postcode_field)
+        if postcode:
+            url = "http://mapit.mysociety.org/postcode/{0}".format(postcode)
+            response = requests.get(url)
+            row = self.process_mapit_response(response, row, output_options)
+        return row
+
+    def process_mapit_response(response, row, output_options):
+        if response.status_code == 200:
+            try:
+                json = response.json()
+                for output_option in output_options:
+                    row.update(output_option.get_from_mapit_response(json))
+            except ValueError:
+                # Requests raises a ValueError if the response is
+                # not json so we just skip looking up this row
+                pass
 
     def send_success_email(self, bulk_lookup):
         self.stdout.write(self.style.SUCCESS('sending success email'))

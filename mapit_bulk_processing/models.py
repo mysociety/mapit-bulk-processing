@@ -35,6 +35,10 @@ class BulkLookup(models.Model):
         upload_to='original_files/%Y/%m/%d/',
         blank=False
     )
+    output_file = models.FileField(
+        upload_to='output_files/%Y/%m/%d/',
+        blank=True
+    )
     postcode_field = models.CharField(max_length=256, blank=True)
     output_options = models.ManyToManyField(
         'OutputOption',
@@ -89,12 +93,41 @@ class BulkLookup(models.Model):
             pass
         return has_stripe_charge
 
+    def output_field_names(self):
+        names = self.field_names()
+        for option in self.output_options.all():
+            names += option.output_field_names()
+        return names
+
+    def output_filename(self):
+        original_filename = os.path.basename(self.original_file.name)
+        return original_filename.rstrip(".csv") + "_output.csv"
+
 
 class OutputOption(models.Model):
     name = models.CharField(max_length=256, blank=False)
+    mapit_area_type = models.CharField(max_length=256, blank=False)
 
     def __str__(self):
         return self.name
+
+    def output_field_names(self):
+        return [
+            "{0} - Name".format(self.name),
+            "{0} - GSS Code".format(self.name),
+            "{0} - MapIt Id".format(self.name)
+        ]
+
+    def get_from_mapit_response(self, response):
+        """ Extract the right data from mapit's response JSON """
+        fields = {f: "" for f in self.output_field_names()}
+        for id, area in response['areas'].iteritems():
+            if area['type'] == self.mapit_area_type:
+                fields["{0} - Name".format(self.name)] = area['name']
+                fields["{0} - GSS Code".format(self.name)] = area['codes']['gss']  # NOQA
+                fields["{0} - MapIt Id".format(self.name)] = id
+                break
+        return fields
 
 
 class StripeCharge(models.Model):
