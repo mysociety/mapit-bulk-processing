@@ -27,7 +27,30 @@ GOOGLE_ANALYTICS_ACCOUNT: ''
 ALLOWED_HOSTS:
   - '.example.com'
 
+# Stripe keys - get these from your Stripe account dashboard
 STRIPE_PUBLIC_KEY: ''
 STRIPE_PRIVATE_KEY: ''
-MAX_CHARGE_RETRIES: 3  # How many times to retry failed jobs
-CHARGE_RETRY_INTERVAL: 15  # Minutes between retrying failed jobs
+
+# How many times to retry failed jobs that fail when contacting Mapit, to
+# avoid trying forever. Exceptions during the job will be logged and emailed
+# to the email address(es) in the ADMINS setting.
+MAX_RETRIES: 3
+
+# Minutes between retrying failed jobs (To give Mapit a moment if something
+# goes wrong). Set to 0 to retry immediately.
+RETRY_INTERVAL: 0
+
+# The url of the mapit instance to call to perform lookups, don't include a
+# trailing slash
+MAPIT_URL: 'http://mapit.mysociety.org'
+
+# Fully qualified url that the site lives at, so that we can make emails with
+# fully qualified links in
+SITE_BASE_URL: 'http://localhost:8000'
+
+# Name for the site, for use in the above sites framework
+SITE_NAME: 'MapIt: Bulk Lookups'
+
+# Port for the local SMTP server used to send emails. This is almost always
+# 25, but in development we use mailcatcher which listens to 1025.
+EMAIL_PORT: 1025

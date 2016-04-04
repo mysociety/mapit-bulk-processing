@@ -7,6 +7,8 @@ from django.db import transaction
 from django.utils import timezone
 from django.core.files import File
 from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 
 import requests
 
@@ -57,7 +59,7 @@ class Command(BaseCommand):
     def lookup_row(self, row, postcode_field, output_options):
         postcode = row.get(postcode_field)
         if postcode:
-            url = "http://mapit.mysociety.org/postcode/{0}".format(postcode)
+            url = "{0}/postcode/{1}".format(settings.MAPIT_URL, postcode)
             response = requests.get(url)
             self.process_mapit_response(response, row, output_options)
 
@@ -73,7 +75,11 @@ class Command(BaseCommand):
                 pass
 
     def send_success_email(self, bulk_lookup):
-        url = "http://localhost:8000{0}".format(bulk_lookup.output_file.url)
+        url = ''.join([
+            'http://',
+            get_current_site(None).domain,
+            bulk_lookup.output_file.url
+        ])
         message = "You can download your new file from {0}".format(url)
         send_mail(
             'Your MapIt Lookup has finished!',

@@ -31,9 +31,10 @@ pip install --requirement requirements.txt
 find . -name '*.pyc' -delete
 
 # get the database up to speed
-./manage.py syncdb
 ./manage.py migrate
 
 # gather all the static files in one place
 ./manage.py collectstatic --noinput
 
+# Make sure we have a site in the sites framework's table for building urls
+./manage.py create_default_site

@@ -18,9 +18,9 @@ class BulkLookupQuerySet(models.QuerySet):
         - Have failed less than 3 times already
         - Last failed more than 15 minutes ago (if they've ever failed)
         """
-        retry_minutes = settings.CHARGE_RETRY_INTERVAL
+        retry_minutes = settings.RETRY_INTERVAL
         retry_time = timezone.now() - timedelta(minutes=retry_minutes)
-        retry_count = settings.MAX_CHARGE_RETRIES
+        retry_count = settings.MAX_RETRIES
         return self.filter(
             started__isnull=True,
             stripe_charge__isnull=False,
