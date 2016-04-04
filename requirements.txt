@@ -3,8 +3,12 @@
 # more details: http://www.pip-installer.org/en/latest/requirements.html
 
 ### General useful bits
-PyYAML
-psycopg2
+PyYAML==3.11
+psycopg2==2.6.1
 
 ### Django related
-Django
+Django==1.9.5
+django-bootstrap3==7.0.1
+django-extensions==1.6.1
+
+stripe==1.32.0

@@ -127,7 +127,6 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'django.contrib.sites',
     'django_extensions',
     'bootstrap3',
     'mapit_bulk_processing'
