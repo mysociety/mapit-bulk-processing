@@ -85,6 +85,6 @@ class Command(BaseCommand):
             'Your MapIt Lookup has finished!',
             message,
             'no-reply@mapit.mysociety.org',
-            ['to@example.com'],
+            [bulk_lookup.email],
             fail_silently=False
         )
