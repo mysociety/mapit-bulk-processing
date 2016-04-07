@@ -17,11 +17,11 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config.get('MAPIT_BULK_PROCESSING_DB_NAME'),
-        'USER': config.get('MAPIT_BULK_PROCESSING_DB_USER'),
-        'PASSWORD': config.get('MAPIT_BULK_PROCESSING_DB_PASS'),
-        'HOST': config.get('MAPIT_BULK_PROCESSING_DB_HOST'),
-        'PORT': config.get('MAPIT_BULK_PROCESSING_DB_PORT'),
+        'NAME': config.get('MAPITBULK_DB_NAME'),
+        'USER': config.get('MAPITBULK_DB_USER'),
+        'PASSWORD': config.get('MAPITBULK_DB_PASS'),
+        'HOST': config.get('MAPITBULK_DB_HOST'),
+        'PORT': config.get('MAPITBULK_DB_PORT'),
     }
 }
 

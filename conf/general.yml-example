@@ -8,11 +8,11 @@
 #
 # Copyright (c) 2012 UK Citizens Online Democracy. All rights reserved.
 
-MAPIT_BULK_PROCESSING_DB_HOST: 'localhost'
-MAPIT_BULK_PROCESSING_DB_PORT: '5432'
-MAPIT_BULK_PROCESSING_DB_USER: 'mapit-bulk-processing'
-MAPIT_BULK_PROCESSING_DB_NAME: 'mapit-bulk-processing'
-MAPIT_BULK_PROCESSING_DB_PASS: 'mapit-bulk-processing'
+MAPITBULK_DB_HOST: 'localhost'
+MAPITBULK_DB_PORT: '5432'
+MAPITBULK_DB_USER: 'mapit-bulk-processing'
+MAPITBULK_DB_NAME: 'mapit-bulk-processing'
+MAPITBULK_DB_PASS: 'mapit-bulk-processing'
 
 STAGING: '1'
 
