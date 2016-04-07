@@ -1,0 +1,4 @@
+MAILTO=example@example.com
+
+# Process bulk jobs every 5 minutes
+*/5 * * * * python manage.py process_bulk_lookups
