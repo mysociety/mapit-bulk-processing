@@ -6,6 +6,25 @@ from datetime import timedelta
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from django.utils.crypto import get_random_string
+
+
+def original_file_upload_to(instance, filename):
+    return random_filename_and_folder_path('original_files', filename)
+
+
+def output_file_upload_to(instance, filename):
+    return random_filename_and_folder_path('output_files', filename)
+
+
+def random_filename(filename):
+    base_filename, extension = os.path.splitext(filename)
+    return get_random_string() + extension
+
+
+def random_filename_and_folder_path(self, base_folder, filename):
+    random_folder = get_random_string()
+    return "/".join(base_folder, random_folder, random_filename(filename))
 
 
 class BulkLookupQuerySet(models.QuerySet):
@@ -32,11 +51,11 @@ class BulkLookupQuerySet(models.QuerySet):
 
 class BulkLookup(models.Model):
     original_file = models.FileField(
-        upload_to='original_files/%Y/%m/%d/',
+        upload_to=original_file_upload_to,
         blank=False
     )
     output_file = models.FileField(
-        upload_to='output_files/%Y/%m/%d/',
+        upload_to=output_file_upload_to,
         blank=True
     )
     postcode_field = models.CharField(max_length=256, blank=True)
@@ -98,10 +117,6 @@ class BulkLookup(models.Model):
         for option in self.output_options.all():
             names += option.output_field_names()
         return names
-
-    def output_filename(self):
-        original_filename = os.path.basename(self.original_file.name)
-        return original_filename.rstrip(".csv") + "_output.csv"
 
 
 class OutputOption(models.Model):

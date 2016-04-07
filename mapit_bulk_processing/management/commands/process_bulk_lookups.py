@@ -1,3 +1,4 @@
+import os
 import logging
 import tempfile
 import csv
@@ -12,7 +13,7 @@ from django.contrib.sites.shortcuts import get_current_site
 
 import requests
 
-from ...models import BulkLookup
+from ...models import BulkLookup, random_filename
 
 
 logger = logging.getLogger(__name__)
@@ -51,10 +52,11 @@ class Command(BaseCommand):
             for row in bulk_lookup.original_file_reader():
                 self.lookup_row(row, postcode_field, output_options)
                 writer.writerow(row)
-            bulk_lookup.output_file.save(
-                bulk_lookup.output_filename(),
-                File(f)
+            original_filename = os.path.basename(
+                bulk_lookup.original_file.name
             )
+            output_filename = random_filename(original_filename)
+            bulk_lookup.output_file.save(output_filename, File(f))
 
     def lookup_row(self, row, postcode_field, output_options):
         postcode = row.get(postcode_field)
