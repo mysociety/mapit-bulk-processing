@@ -23,6 +23,13 @@ Alias /static /data/vhost/example.com/collected_static
 Alias /robots.txt /data/vhost/example.com/mapit_bulk_processing/web/robots.txt
 Alias /favicon.ico /data/vhost/example.com/mapit_bulk_processing/web/favicon.ico
 
+<Directory "/data/vhost/example.com/media">
+  Options -Indexes
+</Directory>
+<Directory "/data/vhost/example.com/collected_static">
+  Options -Indexes
+</Directory>
+
 WSGIDaemonProcess example.com \
     user=exampleuser \
     group=examplegroup \
