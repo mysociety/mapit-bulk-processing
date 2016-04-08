@@ -66,6 +66,7 @@ class BulkLookup(models.Model):
     )
     email = models.EmailField(blank=True)
     description = models.TextField(blank=True)
+    bad_rows = models.IntegerField(blank=True, null=True)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -87,10 +88,13 @@ class BulkLookup(models.Model):
         return self.price() * 100
 
     def price(self):
-        return self.num_rows() * 1
+        return self.num_good_rows() * 1
 
     def num_rows(self):
         return sum(1 for row in self.original_file_reader())
+
+    def num_good_rows(self):
+        return self.num_rows() - self.bad_rows
 
     def postcode_field_choices(self):
         return [(f, f) for f in self.field_names()]

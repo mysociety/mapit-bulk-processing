@@ -4,6 +4,7 @@ from django import forms
 from django.conf import settings
 
 import stripe
+from ukpostcodeutils.validation import is_valid_postcode
 
 from .models import BulkLookup, StripeCharge
 
@@ -12,17 +13,56 @@ logger = logging.getLogger(__name__)
 
 
 class PostcodeFieldForm(forms.ModelForm):
+    # This is hidden by default and only shown if the CSV fails validation
+    skip_bad_rows = forms.BooleanField(
+        widget=forms.HiddenInput(),
+        required=False,
+        label="Yes, skip those bad rows"
+        )
+    postcode_field = forms.ChoiceField(required=True)
+    bad_rows = forms.IntegerField(widget=forms.HiddenInput(), required=False)
+
     def __init__(self, *args, **kwargs):
         postcode_fields = kwargs.pop('postcode_fields')
         super(PostcodeFieldForm, self).__init__(*args, **kwargs)
-        self.fields['postcode_field'] = forms.ChoiceField(
-            choices=postcode_fields,
-            required=True
-        )
+        self.fields['postcode_field'].choices = postcode_fields
+
+    def clean(self):
+        cleaned_data = super(PostcodeFieldForm, self).clean()
+        postcode_field = cleaned_data.get('postcode_field')
+        skip_bad_rows = cleaned_data.get('skip_bad_rows')
+        bad_rows = 0
+        bad_row_numbers = []
+        for i, row in enumerate(self.instance.original_file_reader()):
+            postcode = row[postcode_field].replace(" ", "")
+            if not is_valid_postcode(postcode):
+                bad_rows += 1
+                bad_row_numbers.append(str(i + 1))
+        if not skip_bad_rows and bad_rows > 0:
+            # Make sure the skip checkbox is shown next time
+            self.fields['skip_bad_rows'].widget = forms.CheckboxInput()
+            if bad_rows == 1:
+                msg = 'Row: '
+                msg += ', '.join(bad_row_numbers)
+                msg += ' doesn\'t seem to be a valid postcode.'
+                msg += ' Do you want us to skip it?'
+            else:
+                msg = 'Rows: '
+                msg += ', '.join(bad_row_numbers)
+                msg += ' don\'t seem to be valid postcodes.'
+                msg += ' Do you want us to skip them?'
+            raise forms.ValidationError(msg)
+        else:
+            cleaned_data['bad_rows'] = bad_rows
+        return cleaned_data
+
+    def save(self, commit=True):
+        del self.cleaned_data['skip_bad_rows']
+        return super(PostcodeFieldForm, self).save(commit=commit)
 
     class Meta:
         model = BulkLookup
-        fields = ['postcode_field']
+        fields = ['postcode_field', 'bad_rows']
 
 
 class OutputOptionsForm(forms.ModelForm):
