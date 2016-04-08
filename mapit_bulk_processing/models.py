@@ -22,9 +22,9 @@ def random_filename(filename):
     return get_random_string() + extension
 
 
-def random_filename_and_folder_path(self, base_folder, filename):
+def random_filename_and_folder_path(base_folder, filename):
     random_folder = get_random_string()
-    return "/".join(base_folder, random_folder, random_filename(filename))
+    return "/".join([base_folder, random_folder, random_filename(filename)])
 
 
 class BulkLookupQuerySet(models.QuerySet):
