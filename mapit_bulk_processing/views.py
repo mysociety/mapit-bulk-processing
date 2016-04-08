@@ -1,3 +1,5 @@
+import re
+
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView
 from django.core.urlresolvers import reverse_lazy
@@ -27,6 +29,14 @@ class PostcodeFieldView(UpdateView):
         kwargs = super(PostcodeFieldView, self).get_form_kwargs()
         kwargs['postcode_fields'] = self.object.postcode_field_choices()
         return kwargs
+
+    def get_initial(self):
+        initial = super(PostcodeFieldView, self).get_initial()
+        for choice, value in self.object.postcode_field_choices():
+            if re.match(r'post(\s)*code', choice, flags=re.IGNORECASE):
+                initial['postcode_field'] = choice
+                break
+        return initial
 
     def get_success_url(self):
         return reverse_lazy('output_options', args=[self.object.id])
