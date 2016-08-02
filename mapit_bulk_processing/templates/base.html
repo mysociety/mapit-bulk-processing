@@ -31,7 +31,9 @@
         <script src="https://cdn.datatables.net/1.10.11/js/dataTables.bootstrap.min.js"></script>
         <script>
           $(document).ready(function() {
-            $('table').DataTable();
+            $('table').DataTable({
+              'scrollX': true
+            });
           });
         </script>
     </body>
