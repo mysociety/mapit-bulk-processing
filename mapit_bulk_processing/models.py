@@ -1,7 +1,8 @@
 import os
-import csv
 import itertools
 from datetime import timedelta
+
+import unicodecsv as csv
 
 from django.db import models
 from django.utils import timezone

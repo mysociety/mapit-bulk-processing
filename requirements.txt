@@ -13,3 +13,5 @@ django-extensions==1.6.1
 
 stripe==1.32.0
 uk-postcode-utils==0.1.0
+
+unicodecsv==0.14.1
