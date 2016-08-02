@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load bootstrap3 %}
+{% load get_item %}
 
 {% block title %}Choose postcode field{% endblock %}
 
@@ -36,8 +37,10 @@
               {% for row in bulk_lookup.example_rows %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                  {% for value in row.values %}
-                    <td>{{ value }}</td>
+                  {# Extracting fields by field_names list makes sure #}
+                  {# they're in the same order we printed headers above #}
+                  {% for field in bulk_lookup.field_names %}
+                    <td>{{ row|get_item:field }}</td>
                   {% endfor %}
                 </tr>
               {% endfor %}
